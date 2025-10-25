@@ -7,8 +7,15 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Player Movement")]
     [Space]
-    [SerializeField] float PlayerMaxSpeed = 8;
+    [SerializeField] float PlayerMaxSpeedDefault = 10;
+    [SerializeField] float PlayerMaxSpeedCoke = 14;
     [SerializeField] float PlayerAcceleration = 3;
+    private float playerMaxSpeed = 10;
+
+    [Header("Time Scale")]
+    [Space]
+    [SerializeField] float DefaultTimeScale = 1;
+    [SerializeField] float SlowMotionTimeScale = 0.4f;
 
     [Header("Player Jump")]
     [Space]
@@ -32,6 +39,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerInput playerInput;
 
     private Rigidbody rigidbody;
+    private CapsuleCollider collider;
 
     private InputAction playerMovement;
     private InputAction playerLook;
@@ -40,9 +48,9 @@ public class PlayerController : MonoBehaviour
     private float cameraRotationY;
     private float cameraRotationX;
 
-
     void Start()
     {
+        collider = GetComponent<CapsuleCollider>();
         rigidbody = GetComponent<Rigidbody>();
         cameraTransform = Camera.main.transform;
 
@@ -51,15 +59,38 @@ public class PlayerController : MonoBehaviour
         playerJump = playerInput.actions["Jump"];
 
         playerJump.started += Jump;
+
         LSDDrug.OnLSDEnabled += EnableDoubleJump;
         LSDDrug.OnLSDDisabled += DisableDoubleJump;
+
+        CokeDrug.OnCokeEnabled += IncreaseMaxSpeed;
+        CokeDrug.OnCokeDisabled += DecreaseMaxSpeed;
+
+        HeroinDrug.OnHeroinEnabled += DisablePlayerCollision;
+        HeroinDrug.OnHeroinDisabled += EnablePlayerCollision;
+
+        HazeDrug.OnHazeEnabled += SlowMotion;
+        HazeDrug.OnHazeDisabled += DisableSlowMotion;
     }
+
+
     private void OnDisable()
     {
         playerJump.started -= Jump;
+
         LSDDrug.OnLSDEnabled -= EnableDoubleJump;
         LSDDrug.OnLSDDisabled -= DisableDoubleJump;
+
+        CokeDrug.OnCokeEnabled -= IncreaseMaxSpeed;
+        CokeDrug.OnCokeDisabled -= DecreaseMaxSpeed;
+
+        HeroinDrug.OnHeroinEnabled -= DisablePlayerCollision;
+        HeroinDrug.OnHeroinDisabled -= EnablePlayerCollision;
+
+        HazeDrug.OnHazeEnabled -= SlowMotion;
+        HazeDrug.OnHazeDisabled -= DisableSlowMotion;
     }
+
 
     void FixedUpdate()
     {
@@ -89,7 +120,7 @@ public class PlayerController : MonoBehaviour
 
         Vector3 velocityChange = targetVelocity - currentVelocity;
         velocityChange.y = 0f;
-        velocityChange = Vector3.ClampMagnitude(velocityChange, PlayerMaxSpeed);
+        velocityChange = Vector3.ClampMagnitude(velocityChange, playerMaxSpeed);
 
         rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
     }
@@ -122,7 +153,9 @@ public class PlayerController : MonoBehaviour
     private void Jump(InputAction.CallbackContext context)
     {
         if (context.started && isGrounded)
+        {
             rigidbody.AddForce(new Vector3(0, PlayerJumpForce, 0), ForceMode.Impulse);
+        }
 
         if (context.started && !isGrounded && doubleJumpCounter > 0)
         {
@@ -130,6 +163,7 @@ public class PlayerController : MonoBehaviour
             doubleJumpCounter--;
         }
     }
+
     private void GroundCheck()
     {
         if (Physics.Raycast(playerRoot.position, Vector3.down, 0.3f) == true)
@@ -145,13 +179,40 @@ public class PlayerController : MonoBehaviour
             isGrounded = false;
     }
 
+    #region Event Methods
     private void DisableDoubleJump(object sender, EventArgs e)
     {
         allowDoubleJump = false;
     }
-
     private void EnableDoubleJump(object sender, EventArgs e)
     {
         allowDoubleJump = true;
     }
+    private void IncreaseMaxSpeed(object sender, EventArgs e)
+    {
+        playerMaxSpeed = PlayerMaxSpeedCoke;
+    }
+    private void DecreaseMaxSpeed(object sender, EventArgs e)
+    {
+        playerMaxSpeed = PlayerMaxSpeedDefault;
+    }
+    private void SlowMotion(object sender, EventArgs e)
+    {
+        Time.timeScale = SlowMotionTimeScale;
+    }
+    private void DisableSlowMotion(object sender, EventArgs e)
+    {
+        Time.timeScale = DefaultTimeScale;
+    }
+
+    private void EnablePlayerCollision(object sender, EventArgs e)
+    {
+        collider.enabled = true;
+    }
+
+    private void DisablePlayerCollision(object sender, EventArgs e)
+    {
+        collider.enabled = false;
+    }
+    #endregion
 }
