@@ -1,11 +1,15 @@
+using System;
 using UnityEngine;
 
 public class HazeDrug : DrugBase
 {
+    public static event EventHandler OnHazeEnabled;
+    public static event EventHandler OnHazeDisabled;
+
     private float prevScale;
     private float prevFixed;
 
-    public HazeDrug(float _durationSec) : base(_durationSec) 
+    public HazeDrug(float _duration) : base(_duration) 
     {
 
     }
@@ -19,6 +23,7 @@ public class HazeDrug : DrugBase
         Time.timeScale = 0.5f;
         Time.fixedDeltaTime = 0.5f * 0.02f;
         _ctx.Vfx.SetHaze(true);
+        OnHazeEnabled?.Invoke(this, EventArgs.Empty);
     }
 
     protected override void OnEnd(DrugsContext _ctx)
@@ -26,5 +31,6 @@ public class HazeDrug : DrugBase
         Time.timeScale = prevScale;
         Time.fixedDeltaTime = prevFixed;
         _ctx.Vfx.SetHaze(false);
+        OnHazeDisabled?.Invoke(this, EventArgs.Empty);
     }
 }

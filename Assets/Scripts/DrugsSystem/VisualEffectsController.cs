@@ -9,8 +9,8 @@ public class VisualEffectsController : MonoBehaviour
     public GameObject HeroinVolume;
 
     [Header("Map Toggles")]
-    public GameObject[] objectsToRevealOnLSD;
     public GameObject[] objectsToRevealOnHaze;
+    public GameObject[] objectsToRevealOnLSD;
     public GameObject[] objectsToRevealOnCoke;
     public GameObject[] objectsToRevealOnHeroin;
 
