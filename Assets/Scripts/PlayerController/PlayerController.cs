@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -12,13 +13,12 @@ public class PlayerController : MonoBehaviour
     [Header("Player Jump")]
     [Space]
     [SerializeField] float PlayerJumpForce = 10;
-    [SerializeField] int minJumpCount = 1;
-    [SerializeField] int maxJumpCount = 2;
-    private int jumpsAllowed;
+    [SerializeField] int doubleJumpCounter = 0;
 
     [SerializeField] Transform playerRoot;
-    private bool allowDoubleJump;
+    [SerializeField] bool allowDoubleJump = false;
     private bool isGrounded;
+
 
     [Header("Player Camera Values")]
     [Space]
@@ -43,14 +43,22 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        jumpsAllowed = ResetJumps();
         rigidbody = GetComponent<Rigidbody>();
         cameraTransform = Camera.main.transform;
+
         playerMovement = playerInput.actions["Move"];
         playerLook = playerInput.actions["Look"];
-
         playerJump = playerInput.actions["Jump"];
+
         playerJump.started += Jump;
+        LSDDrug.OnLSDEnabled += EnableDoubleJump;
+        LSDDrug.OnLSDDisabled += DisableDoubleJump;
+    }
+    private void OnDisable()
+    {
+        playerJump.started -= Jump;
+        LSDDrug.OnLSDEnabled -= EnableDoubleJump;
+        LSDDrug.OnLSDDisabled -= DisableDoubleJump;
     }
 
     void FixedUpdate()
@@ -74,7 +82,7 @@ public class PlayerController : MonoBehaviour
         var temp = _playerDirection;
 
         Vector3 currentVelocity = rigidbody.linearVelocity;
-        Vector3 targetVelocity = new Vector3(temp.x, 0, temp.z);
+        Vector3 targetVelocity = new Vector3(temp.x, 0, 1);
         targetVelocity *= PlayerAcceleration;
 
         targetVelocity = transform.TransformDirection(targetVelocity);
@@ -85,6 +93,7 @@ public class PlayerController : MonoBehaviour
 
         rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
     }
+
 
     private Vector3 PlayerDirection()
     {
@@ -110,29 +119,39 @@ public class PlayerController : MonoBehaviour
         cameraTransform.eulerAngles = new Vector3(cameraRotationY, cameraRotationX, cameraTransform.eulerAngles.z);
     }
 
-    public void Jump(InputAction.CallbackContext context)
+    private void Jump(InputAction.CallbackContext context)
     {
-        if (context.started && jumpsAllowed >= 1)
+        if (context.started && isGrounded)
+            rigidbody.AddForce(new Vector3(0, PlayerJumpForce, 0), ForceMode.Impulse);
+
+        if (context.started && !isGrounded && doubleJumpCounter > 0)
         {
             rigidbody.AddForce(new Vector3(0, PlayerJumpForce, 0), ForceMode.Impulse);
-            jumpsAllowed--;
+            doubleJumpCounter--;
         }
     }
-
     private void GroundCheck()
     {
         if (Physics.Raycast(playerRoot.position, Vector3.down, 0.3f) == true)
         {
-            jumpsAllowed = ResetJumps();
+            isGrounded = true;
+            if (allowDoubleJump)
+                doubleJumpCounter = 1;
+            else
+                doubleJumpCounter = 0;      
         }
+
+        else
+            isGrounded = false;
     }
 
-    private int ResetJumps()
+    private void DisableDoubleJump(object sender, EventArgs e)
     {
-        if (allowDoubleJump)
-        {
-            return maxJumpCount;
-        }
-        return minJumpCount;
+        allowDoubleJump = false;
+    }
+
+    private void EnableDoubleJump(object sender, EventArgs e)
+    {
+        allowDoubleJump = true;
     }
 }
