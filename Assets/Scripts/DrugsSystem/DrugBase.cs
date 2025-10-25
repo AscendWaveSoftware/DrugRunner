@@ -36,6 +36,6 @@ public abstract class DrugBase : IDrug
     private IEnumerator AutoStop(float _sec,DrugsContext _ctx)
     {
         yield return new WaitForSeconds(_sec);
-        End(_ctx);
+        _ctx.Manager.Stop(Type);
     }
 }
