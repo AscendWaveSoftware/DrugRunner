@@ -1,36 +1,56 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Player Movement")]
+    [Space]
     [SerializeField] float PlayerMaxSpeed = 8;
     [SerializeField] float PlayerAcceleration = 3;
 
+    [Header("Player Jump")]
+    [Space]
+    [SerializeField] float PlayerJumpForce = 10;
+    [SerializeField] int minJumpCount = 1;
+    [SerializeField] int maxJumpCount = 2;
+    private int jumpsAllowed;
+
+    [SerializeField] Transform playerRoot;
+    private bool allowDoubleJump;
+    private bool isGrounded;
+
+    [Header("Player Camera Values")]
+    [Space]
     [SerializeField] float PlayerLookSensitivity = 20;
-
-    [SerializeField] float CameraClampUpAndDown = 50;
-    [SerializeField] float CameraClampLeftAndRight = 50;
-
+    [SerializeField] float CameraClampDown = 50;
+    [SerializeField] float CameraClampUp = 50;
+    [SerializeField] float CameraClampLeft = 50;
+    [SerializeField] float CameraClampRight = 50;
     [SerializeField] Transform cameraTransform;
+    [Space]
+    [SerializeField] PlayerInput playerInput;
 
-    public PlayerInput playerInput;
     private Rigidbody rigidbody;
 
     private InputAction playerMovement;
     private InputAction playerLook;
+    private InputAction playerJump;
 
     private float cameraRotationY;
     private float cameraRotationX;
-    private Vector2 rotation;
-
 
 
     void Start()
     {
+        jumpsAllowed = ResetJumps();
         rigidbody = GetComponent<Rigidbody>();
         cameraTransform = Camera.main.transform;
         playerMovement = playerInput.actions["Move"];
         playerLook = playerInput.actions["Look"];
+
+        playerJump = playerInput.actions["Jump"];
+        playerJump.started += Jump;
     }
 
     void FixedUpdate()
@@ -40,7 +60,11 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        rotation = GetRotation();
+        GroundCheck();
+        Debug.Log(isGrounded);
+    }
+    private void LateUpdate()
+    {
         UpdateCamera();
     }
 
@@ -65,7 +89,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 PlayerDirection()
     {
         var temp = playerMovement.ReadValue<Vector2>();
-        return new Vector3 ( temp.x, 0, temp.y );
+        return new Vector3(temp.x, 0, temp.y);
     }
 
     private Vector2 GetRotation()
@@ -78,11 +102,37 @@ public class PlayerController : MonoBehaviour
         var rotation = GetRotation();
 
         cameraRotationY += -rotation.y * PlayerLookSensitivity * Time.deltaTime;
-        cameraRotationY = Mathf.Clamp(cameraRotationY, -CameraClampUpAndDown, CameraClampUpAndDown);
+        cameraRotationY = Mathf.Clamp(cameraRotationY, -CameraClampUp, CameraClampDown);
 
         cameraRotationX += rotation.x * PlayerLookSensitivity * Time.deltaTime;
-        cameraRotationX = Mathf.Clamp(cameraRotationX, -CameraClampLeftAndRight, CameraClampLeftAndRight);
+        cameraRotationX = Mathf.Clamp(cameraRotationX, -CameraClampRight, CameraClampLeft);
 
         cameraTransform.eulerAngles = new Vector3(cameraRotationY, cameraRotationX, cameraTransform.eulerAngles.z);
+    }
+
+    public void Jump(InputAction.CallbackContext context)
+    {
+        if (context.started && jumpsAllowed >= 1)
+        {
+            rigidbody.AddForce(new Vector3(0, PlayerJumpForce, 0), ForceMode.Impulse);
+            jumpsAllowed--;
+        }
+    }
+
+    private void GroundCheck()
+    {
+        if (Physics.Raycast(playerRoot.position, Vector3.down, 0.3f) == true)
+        {
+            jumpsAllowed = ResetJumps();
+        }
+    }
+
+    private int ResetJumps()
+    {
+        if (allowDoubleJump)
+        {
+            return maxJumpCount;
+        }
+        return minJumpCount;
     }
 }
