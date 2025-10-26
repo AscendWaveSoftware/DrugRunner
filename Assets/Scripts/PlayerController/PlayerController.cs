@@ -207,12 +207,14 @@ public class PlayerController : MonoBehaviour
 
     private void EnablePlayerCollision(object sender, EventArgs e)
     {
-        collider.enabled = true;
+        //collider.enabled = true;
+        DrugsManager.playerCanDie = false;
     }
 
     private void DisablePlayerCollision(object sender, EventArgs e)
     {
-        collider.enabled = false;
+        //collider.enabled = false;
+        DrugsManager.playerCanDie = true;
     }
     #endregion
 }

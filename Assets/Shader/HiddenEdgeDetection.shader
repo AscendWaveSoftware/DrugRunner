@@ -2,6 +2,7 @@ Shader "Hidden/Edge Detection"
 {
     Properties
     {
+	_CemAddsStuff ("StuffAddedByCem",Float) = 1
         _OutlineThickness ("Outline Thickness", Float) = 1
         _OutlineColor ("Outline Color", Color) = (0, 0, 0, 1)
         _ReferenceResolution ("Reference Resolution (height px)", Float) = 360
@@ -30,6 +31,7 @@ Shader "Hidden/Edge Detection"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareNormalsTexture.hlsl" // needed to sample scene normals
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareOpaqueTexture.hlsl" // needed to sample scene color/luminance
 
+		float _CemAddsStuff;
             float _OutlineThickness;
             float4 _OutlineColor;
             float _ReferenceResolution;
@@ -68,11 +70,14 @@ Shader "Hidden/Edge Detection"
 
             half4 frag(Varyings IN) : SV_TARGET
             {
+float2 uv = IN.texcoord;
+		float4 depth = _CameraDepthTexture.Sample(sampler_CameraDepthTexture, uv);
+float powDepth = pow(half4(depth.x, depth.x, depth.x, 1),0.1);
                 // Screen-space coordinates which we will use to sample.
-                float2 uv = IN.texcoord;
+                
                 float2 texel_size = float2(1.0 / _ScreenParams.x, 1.0 / _ScreenParams.y);
 
-// Auflösungsabhängige Dicke:
+// Aufl?sungsabh?ngige Dicke:
 // Wenn _ReferenceResolution <= 0, vermeiden wir Division durch 0 und skippen die Skalierung.
 float refRes = max(_ReferenceResolution, 1.0);
 float scaled_outline_thickness = _OutlineThickness * (_ScreenParams.y / refRes);
@@ -85,13 +90,15 @@ const float half_width_c = ceil(scaled_outline_thickness * 0.5);
                 
 
                 float2 uvs[4];
-                uvs[0] = uv + texel_size * float2(half_width_f, half_width_c) * float2(-1, 1);  // top left
-                uvs[1] = uv + texel_size * float2(half_width_c, half_width_c) * float2(1, 1);   // top right
-                uvs[2] = uv + texel_size * float2(half_width_f, half_width_f) * float2(-1, -1); // bottom left
-                uvs[3] = uv + texel_size * float2(half_width_c, half_width_f) * float2(1, -1);  // bottom right
+                uvs[0] = uv + texel_size * float2(half_width_f, half_width_c) * float2(-1, 1)  * _CemAddsStuff;  // top left
+                uvs[1] = uv + texel_size * float2(half_width_c, half_width_c) * float2(1, 1)  * _CemAddsStuff;   // top right
+                uvs[2] = uv + texel_size * float2(half_width_f, half_width_f) * float2(-1, -1)  * _CemAddsStuff; // bottom left
+                uvs[3] = uv + texel_size * float2(half_width_c, half_width_f) * float2(1, -1)  * _CemAddsStuff;  // bottom right
                 
                 float3 normal_samples[4];
                 float depth_samples[4], luminance_samples[4];
+
+                
                 
                 for (int i = 0; i < 4; i++) {
                     depth_samples[i] = SampleSceneDepth(uvs[i]);
@@ -115,10 +122,12 @@ const float half_width_c = ceil(scaled_outline_thickness * 0.5);
                 edge_luminance = edge_luminance > luminance_threshold ? 1 : 0;
                 
                 // Combine the edges from depth/normals/luminance using the max operator.
-                float edge = max(edge_depth, max(edge_normal, edge_luminance));
-                
+                float edge = max(edge_depth, max(edge_normal, edge_luminance));  
+    		float4 grrr =  _OutlineColor;
+
                 // Color the edge with a custom color.
-                return edge * _OutlineColor;
+//return float4(powDepth,powDepth,powDepth ,1);
+                return edge * half4(grrr.x,grrr.y,grrr.z,powDepth);
             }
             ENDHLSL
         }

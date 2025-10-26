@@ -10,6 +10,7 @@ public class EdgeDetection : ScriptableRendererFeature
     {
         private Material material;
 
+        private static readonly int OutlineCemProperty = Shader.PropertyToID("_CemAddsStuff");
         private static readonly int OutlineThicknessProperty = Shader.PropertyToID("_OutlineThickness");
         private static readonly int OutlineColorProperty = Shader.PropertyToID("_OutlineColor");
         private static readonly int ReferenceResolutionProperty = Shader.PropertyToID("_ReferenceResolution");
@@ -26,13 +27,14 @@ public class EdgeDetection : ScriptableRendererFeature
             material = edgeDetectionMaterial;
             renderPassEvent = settings.renderPassEvent;
 
+            material.SetFloat(OutlineCemProperty, settings.cem);
             material.SetFloat(OutlineThicknessProperty, settings.outlineThickness);
             material.SetColor(OutlineColorProperty, settings.outlineColor);
 
-            
+
             float refRes = settings.scaleWithResolution
                 ? Mathf.Max(settings.referenceResolution, 1f)
-                : Mathf.Max(Screen.height, 1); 
+                : Mathf.Max(Screen.height, 1);
             material.SetFloat(ReferenceResolutionProperty, refRes);
         }
 
@@ -58,7 +60,8 @@ public class EdgeDetection : ScriptableRendererFeature
     {
         public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingTransparents;
 
-        [Range(0f, 15f)] public float outlineThickness = 3f;  
+        [Range(0, 2)] public float cem;
+        [Range(0f, 15f)] public float outlineThickness = 3f;
         public Color outlineColor = Color.black;
 
         [Tooltip("Ziel-/Referenzhöhe in Pixel, z.B. 360 für 640x360-Ästhetik.")]

@@ -1184,13 +1184,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DrugObstacleSpawner
   pooler: {fileID: 984197182}
-  manger: {fileID: 2085036051}
-  areaSize: {x: 20, y: 1}
+  areaSize: {x: 20, y: 5}
   spawnEveryMin: 0.35
   spawnEveryMax: 0.8
   minFallSpeed: 6
   maxFallSpeed: 14
   useGravity: 1
+  defaultType: 0
 --- !u!1 &984197181
 GameObject:
   m_ObjectHideFlags: 0
@@ -1226,7 +1226,9 @@ MonoBehaviour:
     - {fileID: 1046096619}
     sizePerPrefab: 10
   - type: 1
-    prefabs: []
+    prefabs:
+    - {fileID: 3661219574240880204, guid: a631733623dd5ef479f4389168a758ec, type: 3}
+    - {fileID: 7051744194517330782, guid: 20a27ffb7e2349e459551b879bbc8498, type: 3}
     sizePerPrefab: 6
   - type: 2
     prefabs: []
@@ -1804,6 +1806,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8235921005544905617, guid: 20a27ffb7e2349e459551b879bbc8498, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8493327341716971666, guid: 20a27ffb7e2349e459551b879bbc8498, type: 3}
+      propertyPath: m_IsTrigger
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

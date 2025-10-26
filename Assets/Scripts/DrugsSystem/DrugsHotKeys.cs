@@ -27,6 +27,9 @@ public class DrugsHotKeys : MonoBehaviour
         drug4.performed += OnDrug4;
 
         inputActions.Enable();
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void OnDrug1(InputAction.CallbackContext ctx) =>

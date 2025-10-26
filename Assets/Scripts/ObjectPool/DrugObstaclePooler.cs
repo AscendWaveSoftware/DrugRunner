@@ -47,8 +47,21 @@ public class DrugObstaclePooler : MonoBehaviour
 
     public void Return(DrugType _type, int _prefabIndex, GameObject _go)
     {
+        _go.transform.SetParent(transform, false);
+
+        if (_go.TryGetComponent<Rigidbody>(out var rb))
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = false;               
+            rb.useGravity = true;
+            rb.detectCollisions = true;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        }
+        if (_go.TryGetComponent<Collider>(out var col))
+            col.enabled = true;
+
         _go.SetActive(false);
-        _go.transform.SetParent(transform);
         pools[_type][_prefabIndex].Enqueue(_go);
     }
 
