@@ -4,6 +4,7 @@ Shader "Hidden/Edge Detection"
     {
         _OutlineThickness ("Outline Thickness", Float) = 1
         _OutlineColor ("Outline Color", Color) = (0, 0, 0, 1)
+        _ReferenceResolution ("Reference Resolution (height px)", Float) = 360
     }
 
     SubShader
@@ -31,6 +32,7 @@ Shader "Hidden/Edge Detection"
 
             float _OutlineThickness;
             float4 _OutlineColor;
+            float _ReferenceResolution;
 
             #pragma vertex Vert // vertex shader is provided by the Blit.hlsl include
             #pragma fragment frag
@@ -69,10 +71,18 @@ Shader "Hidden/Edge Detection"
                 // Screen-space coordinates which we will use to sample.
                 float2 uv = IN.texcoord;
                 float2 texel_size = float2(1.0 / _ScreenParams.x, 1.0 / _ScreenParams.y);
+
+// Auflösungsabhängige Dicke:
+// Wenn _ReferenceResolution <= 0, vermeiden wir Division durch 0 und skippen die Skalierung.
+float refRes = max(_ReferenceResolution, 1.0);
+float scaled_outline_thickness = _OutlineThickness * (_ScreenParams.y / refRes);
+scaled_outline_thickness = max(scaled_outline_thickness, 0.5);
+
+// Generate 4 diagonally placed samples.
+const float half_width_f = floor(scaled_outline_thickness * 0.5);
+const float half_width_c = ceil(scaled_outline_thickness * 0.5);
+
                 
-                // Generate 4 diagonally placed samples.
-                const float half_width_f = floor(_OutlineThickness * 0.5);
-                const float half_width_c = ceil(_OutlineThickness * 0.5);
 
                 float2 uvs[4];
                 uvs[0] = uv + texel_size * float2(half_width_f, half_width_c) * float2(-1, 1);  // top left
