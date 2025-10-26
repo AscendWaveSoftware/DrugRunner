@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public abstract class DrugBase : IDrug
 {
     protected float defaultDuration;
+    public static event EventHandler OnAnimationPlayed;
+    public static event EventHandler OnAnimationStoped;
 
     public abstract DrugType Type { get; }
     public virtual float Duration => defaultDuration;
@@ -20,6 +23,8 @@ public abstract class DrugBase : IDrug
 
         if (Duration > 0)
             _ctx.Manager.StartCoroutine(AutoStop(Duration, _ctx));
+
+        OnAnimationPlayed?.Invoke(this, EventArgs.Empty);
     }
 
     public void End(DrugsContext _ctx)
@@ -37,5 +42,7 @@ public abstract class DrugBase : IDrug
     {
         yield return new WaitForSeconds(_sec);
         _ctx.Manager.Stop(Type);
+
+        OnAnimationStoped?.Invoke(this, EventArgs.Empty);
     }
 }

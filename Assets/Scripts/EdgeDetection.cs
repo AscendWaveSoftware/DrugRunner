@@ -12,19 +12,28 @@ public class EdgeDetection : ScriptableRendererFeature
 
         private static readonly int OutlineThicknessProperty = Shader.PropertyToID("_OutlineThickness");
         private static readonly int OutlineColorProperty = Shader.PropertyToID("_OutlineColor");
+        private static readonly int ReferenceResolutionProperty = Shader.PropertyToID("_ReferenceResolution");
+
+        private int currentTargetHeight = 0;
 
         public EdgeDetectionPass()
         {
             profilingSampler = new ProfilingSampler(nameof(EdgeDetectionPass));
         }
 
-        public void Setup(ref EdgeDetectionSettings settings, ref Material edgeDetectionMaterial)
+        public void Setup(ref EdgeDetectionSettings settings, ref Material edgeDetectionMaterial, int targetHeight)
         {
             material = edgeDetectionMaterial;
             renderPassEvent = settings.renderPassEvent;
 
             material.SetFloat(OutlineThicknessProperty, settings.outlineThickness);
             material.SetColor(OutlineColorProperty, settings.outlineColor);
+
+            
+            float refRes = settings.scaleWithResolution
+                ? Mathf.Max(settings.referenceResolution, 1f)
+                : Mathf.Max(Screen.height, 1); 
+            material.SetFloat(ReferenceResolutionProperty, refRes);
         }
 
         private class PassData
@@ -48,8 +57,15 @@ public class EdgeDetection : ScriptableRendererFeature
     public class EdgeDetectionSettings
     {
         public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingTransparents;
-        [Range(0, 15)] public int outlineThickness = 3;
+
+        [Range(0f, 15f)] public float outlineThickness = 3f;  
         public Color outlineColor = Color.black;
+
+        [Tooltip("Ziel-/Referenzhöhe in Pixel, z.B. 360 für 640x360-Ästhetik.")]
+        public float referenceResolution = 360f;
+
+        [Tooltip("Wenn deaktiviert, wird intern die aktuelle Renderhöhe verwendet (keine Skalierung).")]
+        public bool scaleWithResolution = true;
     }
 
     [SerializeField] private EdgeDetectionSettings settings;
@@ -73,6 +89,8 @@ public class EdgeDetection : ScriptableRendererFeature
     /// </summary>
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
+        int targetH = renderingData.cameraData.cameraTargetDescriptor.height;
+
         // Don't render for some views.
         if (renderingData.cameraData.cameraType == CameraType.Preview
             || renderingData.cameraData.cameraType == CameraType.Reflection
@@ -91,7 +109,7 @@ public class EdgeDetection : ScriptableRendererFeature
 
         edgeDetectionPass.ConfigureInput(ScriptableRenderPassInput.Depth | ScriptableRenderPassInput.Normal | ScriptableRenderPassInput.Color);
         edgeDetectionPass.requiresIntermediateTexture = true;
-        edgeDetectionPass.Setup(ref settings, ref edgeDetectionMaterial);
+        edgeDetectionPass.Setup(ref settings, ref edgeDetectionMaterial, targetH);
 
         renderer.EnqueuePass(edgeDetectionPass);
     }

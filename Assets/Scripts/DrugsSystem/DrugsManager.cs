@@ -6,7 +6,6 @@ public class DrugsManager : MonoBehaviour
     public static DrugsManager Instance { get; private set; }
 
     [Header("Scene References")]
-    [SerializeField] private PlayerEffects player;
     [SerializeField] private VisualEffectsController vfx;
 
     private DrugsContext ctx;
@@ -29,7 +28,7 @@ public class DrugsManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        ctx = new DrugsContext(this, player, vfx);
+        ctx = new DrugsContext(this, vfx);
 
         Register(new HazeDrug(_duration: 5f));
         Register(new LSDDrug(_duration: 10f));
