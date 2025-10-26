@@ -114,13 +114,13 @@ public class PlayerController : MonoBehaviour
 
         Vector3 currentVelocity = rigidbody.linearVelocity;
         Vector3 targetVelocity = new Vector3(temp.x, 0, 1);
-        targetVelocity *= PlayerAcceleration;
+        targetVelocity *= playerMaxSpeed;
 
         targetVelocity = transform.TransformDirection(targetVelocity);
 
         Vector3 velocityChange = targetVelocity - currentVelocity;
         velocityChange.y = 0f;
-        velocityChange = Vector3.ClampMagnitude(velocityChange, playerMaxSpeed);
+        velocityChange = Vector3.ClampMagnitude(velocityChange, PlayerAcceleration);
 
         rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
     }
@@ -208,13 +208,13 @@ public class PlayerController : MonoBehaviour
     private void EnablePlayerCollision(object sender, EventArgs e)
     {
         //collider.enabled = true;
-        DrugsManager.playerCanDie = false;
+        DrugsManager.playerCanDie = true;
     }
 
     private void DisablePlayerCollision(object sender, EventArgs e)
     {
         //collider.enabled = false;
-        DrugsManager.playerCanDie = true;
+        DrugsManager.playerCanDie = false;
     }
     #endregion
 }
