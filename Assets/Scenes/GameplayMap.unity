@@ -896,9 +896,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DrugObstacleSpawner
   pooler: {fileID: 1169784595}
   areaSize: {x: 45, y: 10}
-  spawnEveryMin: 0.35
+  spawnEveryMin: 0.25
   spawnEveryMax: 0.8
-  minFallSpeed: 8
+  minFallSpeed: 7
   maxFallSpeed: 14
   useGravity: 1
   defaultType: 0

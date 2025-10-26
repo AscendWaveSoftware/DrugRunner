@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 5f2ceb387ec0182449fe7e7767e5cce6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.78429
+      value: 4.8433256
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5f2ceb387ec0182449fe7e7767e5cce6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -12.47898
+      value: -7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5f2ceb387ec0182449fe7e7767e5cce6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -53.48697
+      value: -43
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5f2ceb387ec0182449fe7e7767e5cce6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -61,10 +61,10 @@ PrefabInstance:
       addedObject: {fileID: 5841637800229018752}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5f2ceb387ec0182449fe7e7767e5cce6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5582842438509206001}
+      addedObject: {fileID: 4344271562349029869}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5f2ceb387ec0182449fe7e7767e5cce6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4344271562349029869}
+      addedObject: {fileID: 224768157796350115}
   m_SourcePrefab: {fileID: 100100000, guid: 5f2ceb387ec0182449fe7e7767e5cce6, type: 3}
 --- !u!1 &139076517150081822 stripped
 GameObject:
@@ -95,11 +95,27 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!135 &5582842438509206001
-SphereCollider:
+  m_CollisionDetection: 2
+--- !u!114 &4344271562349029869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139076517150081822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbc59ed5e6439b40b792a6e48e0a988, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DrugObstacle
+  pooler: {fileID: 0}
+  drugType: 0
+  prefabIndex: 0
+  maxLifetime: 10
+--- !u!65 &224768157796350115
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -117,21 +133,5 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.015130407
+  m_Size: {x: 0.029868513, y: 0.030260814, z: 0.010538431}
   m_Center: {x: -0.000088402536, y: 0.00041000816, z: 0.005189215}
---- !u!114 &4344271562349029869
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139076517150081822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bbc59ed5e6439b40b792a6e48e0a988, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DrugObstacle
-  pooler: {fileID: 0}
-  drugType: 0
-  prefabIndex: 0
-  maxLifetime: 10
