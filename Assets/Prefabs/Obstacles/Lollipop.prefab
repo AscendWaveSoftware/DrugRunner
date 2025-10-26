@@ -64,7 +64,7 @@ PrefabInstance:
       addedObject: {fileID: 5970302743486843035}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 442a7da98a8610c4a9513ec456feef1b, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7097073901459153963}
+      addedObject: {fileID: 8494101658340814044}
   m_SourcePrefab: {fileID: 100100000, guid: 442a7da98a8610c4a9513ec456feef1b, type: 3}
 --- !u!1 &108584606929704636 stripped
 GameObject:
@@ -114,7 +114,7 @@ MonoBehaviour:
   drugType: 0
   prefabIndex: 0
   maxLifetime: 10
---- !u!65 &7097073901459153963
+--- !u!65 &8494101658340814044
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,5 +133,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.021349851, y: 0.02134986, z: 0.054505162}
-  m_Center: {x: 0.010769341, y: 0.000000063370116, z: 0.0013482692}
+  m_Size: {x: 0.013858473, y: 0.017673526, z: 0.049494132}
+  m_Center: {x: 0.010696317, y: -0.00025095404, z: 0.0010930919}
