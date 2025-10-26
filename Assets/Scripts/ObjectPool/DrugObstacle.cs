@@ -25,10 +25,10 @@ public class DrugObstacle : MonoBehaviour
             Despawn();
     }
 
-    private void OnBecameInvisible()
-    {
-        Despawn();
-    }
+    //private void OnBecameInvisible()
+    //{
+    //    Despawn();
+    //}
 
     private void OnCollisionEnter(Collision collision)
     {
