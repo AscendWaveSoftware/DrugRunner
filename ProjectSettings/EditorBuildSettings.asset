@@ -6,11 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GameplayMap.unity
-    guid: 7e233c51fd644bf4e979ba93db288236
-  - enabled: 1
-    path: Assets/Scenes/WinScene.unity
-    guid: 3b82922c4c8f18042ae75cc604ce1e07
+    path: Assets/Scenes/LevelBuilding.unity
+    guid: a868a7088461911409ff06449eef6670
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
